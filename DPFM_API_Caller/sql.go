@@ -47,12 +47,12 @@ func (c *DPFMAPICaller) createSqlProcess(
 	}
 
 	data := &dpfm_api_output_formatter.Message{
-		Header:                         header,
-		Item:                           item,
-		ItemComponent:                  itemComponent,
-		ItemComponentStockConfirmation: itemComponentStockConfirmation,
-		ItemComponentCosting:           itemComponentCosting,
-		ItemOperations:                 itemOperations,
+		Header:               header,
+		SpecGeneral:          specGeneral,
+		SpecDetail:           specDetail,
+		ComponentComposition: componentComposition,
+		Inspection:           inspection,
+		Operation:            operation,
 	}
 
 	return data
@@ -80,8 +80,8 @@ func (c *DPFMAPICaller) updateSqlProcess(
 	}
 
 	data := &dpfm_api_output_formatter.Message{
-		Header:					header,
-		Inspection:				inspection,
+		Header:     header,
+		Inspection: inspection,
 	}
 
 	return data
@@ -417,8 +417,8 @@ func headerIsUpdate(header *dpfm_api_processing_formatter.HeaderUpdates) bool {
 }
 
 func inspectionIsUpdate(item *dpfm_api_processing_formatter.InspectionUpdates) bool {
-	inspectionLot	:= item.inspectionLot
-	inspection 		:= item.inspection
+	inspectionLot := item.inspectionLot
+	inspection := item.inspection
 
 	return !(inspectionLot == 0 || inspection == 0)
 }
