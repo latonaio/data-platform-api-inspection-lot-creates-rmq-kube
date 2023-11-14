@@ -2,8 +2,8 @@ package sub_func_complementer
 
 import (
 	"context"
-	dpfm_api_input_reader "data-platform-api-production-order-creates-rmq-kube/DPFM_API_Input_Reader"
-	"data-platform-api-production-order-creates-rmq-kube/config"
+	dpfm_api_input_reader "data-platform-api-inspection-lot-creates-rmq-kube/DPFM_API_Input_Reader"
+	"data-platform-api-inspection-lot-creates-rmq-kube/config"
 	"encoding/json"
 
 	"github.com/latonaio/golang-logging-library-for-data-platform/logger"
@@ -30,7 +30,7 @@ func NewSubFuncComplementer(ctx context.Context, c *config.Conf, rmq *rabbitmq.R
 
 func (c *SubFuncComplementer) ComplementHeader(input *dpfm_api_input_reader.SDC, subfuncSDC *SDC, l *logger.Logger) error {
 	s := &SDC{}
-	numRange, err := c.ComplementProductionOrder(input, l)
+	numRange, err := c.ComplementInspectionLot(input, l)
 	if err != nil {
 		return xerrors.Errorf("complement productionOrder error: %w", err)
 	}
@@ -90,7 +90,7 @@ func getBoolPtr(b bool) *bool {
 	return &b
 }
 
-func (c *SubFuncComplementer) ComplementProductionOrder(input *dpfm_api_input_reader.SDC, l *logger.Logger) (*NumberRange, error) {
+func (c *SubFuncComplementer) ComplementInspectionLot(input *dpfm_api_input_reader.SDC, l *logger.Logger) (*NumberRange, error) {
 	rows, err := c.db.Query(
 		`SELECT NumberRangeID, ServiceLabel, FieldNameWithNumberRange, LatestNumber
 		FROM DataPlatformCommonSettingsMysqlKube.data_platform_number_range_latest_number_data
@@ -113,7 +113,7 @@ func (c *SubFuncComplementer) ComplementProductionOrder(input *dpfm_api_input_re
 		return nil, xerrors.Errorf("DB Scan error: %w", err)
 	}
 	nr.LatestNumber++
-	input.Header.ProductionOrder = nr.LatestNumber
+	input.Header.InspectionLot = nr.LatestNumber
 	return &nr, nil
 }
 
