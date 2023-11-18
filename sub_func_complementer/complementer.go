@@ -77,11 +77,11 @@ func (c *SubFuncComplementer) ComplementItem(input *dpfm_api_input_reader.SDC, s
 	subfuncSDC.SubfuncResult = s.SubfuncResult
 	subfuncSDC.SubfuncError = s.SubfuncError
 
-	subfuncSDC.Message.Item = msg.Item
-	subfuncSDC.Message.ItemComponent = msg.ItemComponent
-	subfuncSDC.Message.ItemComponentStockConfirmation = msg.ItemComponentStockConfirmation
-	subfuncSDC.Message.ItemComponentCosting = msg.ItemComponentCosting
-	subfuncSDC.Message.ItemOperations = msg.ItemOperations
+	subfuncSDC.Message.SpecGeneral = msg.SpecGeneral
+	subfuncSDC.Message.SpecDetail = msg.SpecDetail
+	subfuncSDC.Message.ComponentComposition = msg.ComponentComposition
+	subfuncSDC.Message.Inspection = msg.Inspection
+	subfuncSDC.Message.Operation = msg.Operation
 
 	return err
 }

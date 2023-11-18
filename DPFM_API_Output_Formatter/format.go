@@ -106,7 +106,52 @@ func ConvertToHeaderUpdates(headerData dpfm_api_input_reader.Header) (*Header, e
 	return header, nil
 }
 
-func ConvertToInspectionUpdates(itemUpdates *[]dpfm_api_processing_formatter.InspectionUpdates) (*[]Inspection, error) {
+func ConvertToSpecGeneralUpdates(SpecGeneralUpdates *[]dpfm_api_processing_formatter.SpecGeneralUpdates) (*[]SpecGeneral, error) {
+	specGenerals := make([]SpecGeneral, 0)
+
+	for _, data := range *SpecGeneralUpdates {
+		specGeneral, err := TypeConverter[*SpecGeneral](data)
+		if err != nil {
+			return nil, err
+		}
+
+		specGenerals = append(specGenerals, *specGeneral)
+	}
+
+	return &specGenerals, nil
+}
+
+func ConvertToSpecDetailUpdates(specDetailUpdates *[]dpfm_api_processing_formatter.SpecDetailUpdates) (*[]SpecDetail, error) {
+	specDetails := make([]SpecDetail, 0)
+
+	for _, data := range *specDetailUpdates {
+		specDetail, err := TypeConverter[*SpecDetail](data)
+		if err != nil {
+			return nil, err
+		}
+
+		specDetails = append(specDetails, *specDetail)
+	}
+
+	return &specDetails, nil
+}
+
+func ConvertToComponentCompositionUpdates(componentCompositionUpdates *[]dpfm_api_processing_formatter.ComponentCompositionUpdates) (*[]ComponentComposition, error) {
+	componentCompositions := make([]ComponentComposition, 0)
+
+	for _, data := range *componentCompositionUpdates {
+		componentComposition, err := TypeConverter[*ComponentComposition](data)
+		if err != nil {
+			return nil, err
+		}
+
+		componentCompositions = append(componentCompositions, *componentComposition)
+	}
+
+	return &componentCompositions, nil
+}
+
+func ConvertToInspectionUpdates(inspectionUpdates *[]dpfm_api_processing_formatter.InspectionUpdates) (*[]Inspection, error) {
 	inspections := make([]Inspection, 0)
 
 	for _, data := range *inspectionUpdates {
@@ -119,6 +164,21 @@ func ConvertToInspectionUpdates(itemUpdates *[]dpfm_api_processing_formatter.Ins
 	}
 
 	return &inspections, nil
+}
+
+func ConvertToOperationUpdates(operationUpdates *[]dpfm_api_processing_formatter.OperationUpdates) (*[]Operation, error) {
+	operations := make([]Operation, 0)
+
+	for _, data := range *operationUpdates {
+		operation, err := TypeConverter[*Operation](data)
+		if err != nil {
+			return nil, err
+		}
+
+		operations = append(operations, *operation)
+	}
+
+	return &operations, nil
 }
 
 func TypeConverter[T any](data interface{}) (T, error) {
