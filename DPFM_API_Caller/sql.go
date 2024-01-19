@@ -70,6 +70,7 @@ func (c *DPFMAPICaller) updateSqlProcess(
 	var header *dpfm_api_output_formatter.Header
 	var specGeneral *[]dpfm_api_output_formatter.SpecGeneral
 	var inspection *dpfm_api_output_formatter.Inspection
+	var operation *dpfm_api_output_formatter.Operation
 	for _, fn := range accepter {
 		switch fn {
 		case "Header":
@@ -78,6 +79,8 @@ func (c *DPFMAPICaller) updateSqlProcess(
 			specGeneral = c.specGeneralUpdateSql(mtx, input, output, errs, log)
 		case "Inspection":
 			inspection = c.inspectionUpdateSql(mtx, input, output, errs, log)
+		case "Operation":
+			operation = c.operationUpdateSql(mtx, input, output, errs, log)
 		default:
 		}
 	}
@@ -86,6 +89,7 @@ func (c *DPFMAPICaller) updateSqlProcess(
 		Header:               header,
 		SpecGeneral:          specGeneral,
 		Inspection:           inspection,
+		Operation:			  operation,
 	}
 
 	return data
@@ -458,6 +462,50 @@ func (c *DPFMAPICaller) inspectionUpdateSql(
 	return data
 }
 
+func (c *DPFMAPICaller) operationUpdateSql(
+	mtx *sync.Mutex,
+	input *dpfm_api_input_reader.SDC,
+	output *dpfm_api_output_formatter.SDC,
+	errs *[]error,
+	log *logger.Logger,
+) *[]dpfm_api_output_formatter.Operation {
+	req := make([]dpfm_api_processing_formatter.OperationUpdates, 0)
+	sessionID := input.RuntimeSessionID
+
+	header := input.Header
+	for _, operation := range header.Operation {
+		operationData := *dpfm_api_processing_formatter.ConvertToOperationUpdates(operation)
+
+		if operationIsUpdate(&operationData) {
+			res, err := c.rmq.SessionKeepRequest(nil, c.conf.RMQ.QueueToSQL()[0], map[string]interface{}{"message": operationData, "function": "InspectionLotOperation", "runtime_session_id": sessionID})
+			if err != nil {
+				err = xerrors.Errorf("rmq error: %w", err)
+				*errs = append(*errs, err)
+				return nil
+			}
+			res.Success()
+			if !checkResult(res) {
+				output.SQLUpdateResult = getBoolPtr(false)
+				output.SQLUpdateError = "Operation Data cannot update"
+				return nil
+			}
+		}
+		req = append(req, operationData)
+	}
+
+	if output.SQLUpdateResult == nil {
+		output.SQLUpdateResult = getBoolPtr(true)
+	}
+
+	data, err := dpfm_api_output_formatter.ConvertToOperationUpdates(&req)
+	if err != nil {
+		*errs = append(*errs, err)
+		return nil
+	}
+
+	return data
+}
+
 func headerIsUpdate(header *dpfm_api_processing_formatter.HeaderUpdates) bool {
 	inspectionLot := header.InspectionLot
 
@@ -468,7 +516,7 @@ func specGeneralIsUpdate(specGeneral *dpfm_api_processing_formatter.SpecGeneralU
 	inspectionLot := specGeneral.InspectionLot
 	heatNumber := specGeneral.HeatNumber
 
-	return !(inspectionLot == 0 || heatNumber == "")
+	return !(inspectionLot == 0 || heatNumber == ""
 }
 
 func inspectionIsUpdate(inspection *dpfm_api_processing_formatter.InspectionUpdates) bool {
@@ -477,4 +525,15 @@ func inspectionIsUpdate(inspection *dpfm_api_processing_formatter.InspectionUpda
 	inspectionLotInspectionText := inspection.InspectionLotInspectionText
 
 	return !(inspectionLot == 0 || inspectionLotInspectionText == 0)
+}
+
+func operationIsUpdate(operation *dpfm_api_processing_formatter.OperationUpdates) bool {
+	inspectionLot := operation.InspectionLot
+	//	inspection := inspection.Inspection
+	plannedOperationStandardValue 	:= operation.PlannedOperationStandardValue
+	plannedOperationLowerValue 		:= operation.PlannedOperationLowerValue
+	plannedOperationUpperValue		:= operation.PlannedOperationUpperValue
+	plannedOperationValueUnit 		:= operation.PlannedOperationValueUnit
+
+	return !(inspectionLot == 0 || plannedOperationStandardValue == 0 || plannedOperationLowerValue == 0 || plannedOperationUpperValue == 0 || plannedOperationValueUnit == 0)
 }

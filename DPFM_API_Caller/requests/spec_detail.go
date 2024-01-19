@@ -7,8 +7,13 @@ type SpecDetail struct {
     LowerLimitValue	        float32	`json:"LowerLimitValue"`
     StandardValue	        float32	`json:"StandardValue"`
     SpecTypeUnit	        string	`json:"SpecTypeUnit"`
-    CreationDate	        string	`json:"CreationDate"`
-    LastChangeDate	        string	`json:"LastChangeDate"`
-    IsCancelled	            *bool	`json:"IsCancelled"`
-    IsMarkedForDeletion	    *bool	`json:"IsMarkedForDeletion"`
+    Formula			        *string	`json:"Formula"`
+	CreationDate            string   `json:"CreationDate"`
+	CreationTime            string   `json:"CreationTime"`
+	LastChangeDate          string   `json:"LastChangeDate"`
+	LastChangeTime          string   `json:"LastChangeTime"`
+	IsReleased              *bool    `json:"IsReleased"`
+	IsLocked                *bool    `json:"IsLocked"`
+	IsCancelled             *bool    `json:"IsCancelled"`
+	IsMarkedForDeletion     *bool    `json:"IsMarkedForDeletion"`
 }

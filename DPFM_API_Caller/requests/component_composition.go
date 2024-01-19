@@ -3,11 +3,15 @@ package requests
 type ComponentComposition struct {
 	InspectionLot								int		`json:"InspectionLot"`
 	ComponentCompositionType					string	`json:"ComponentCompositionType"`
-	ComponentCompositionUperLimitInPercent		float32	`json:"ComponentCompositionUperLimitInPercent"`
+	ComponentCompositionUpperLimitInPercent		float32	`json:"ComponentCompositionUpperLimitInPercent"`
 	ComponentCompositionLowerLimitInPercent		float32	`json:"ComponentCompositionLowerLimitInPercent"`
 	ComponentCompositionStandardValueInPercent	float32	`json:"ComponentCompositionStandardValueInPercent"`
-	CreationDate								string	`json:"CreationDate"`
-	LastChangeDate								string	`json:"LastChangeDate"`
-	IsCancelled 								*bool	`json:"IsCancelled" `
-	IsMarkedForDeletion							*bool	`json:"IsMarkedForDeletion"`
+	CreationDate            					string   `json:"CreationDate"`
+	CreationTime            					string   `json:"CreationTime"`
+	LastChangeDate          					string   `json:"LastChangeDate"`
+	LastChangeTime          					string   `json:"LastChangeTime"`
+	IsReleased              					*bool    `json:"IsReleased"`
+	IsLocked                					*bool    `json:"IsLocked"`
+	IsCancelled             					*bool    `json:"IsCancelled"`
+	IsMarkedForDeletion     					*bool    `json:"IsMarkedForDeletion"`
 }
